@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Chat IA Daniel - Conversación Bilingüe</title>
+<style>
+body { font-family: Arial, sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; }
+#top-container { display: flex; flex: 0 0 200px; width: 100%; border-bottom: 1px solid #ccc; background: #f5f5f5; overflow-x: auto; }
+#diagrama-container { flex: 3; position: relative; min-width: 1000px; height: 150px; }
+#script-container { flex: 1; background: #f4f4f4; border-left: 1px solid #ccc; padding: 10px; overflow: auto; font-family: monospace; font-size: 12px; min-width: 250px; }
+#diagrama-detalle { height: 100px; border-top:1px solid #ccc; padding:10px; font-family: monospace; white-space: pre-wrap; overflow-y:auto; background:#fff; }
+
+#chat-container { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+#chat { border: 1px solid #ccc; padding: 10px; flex: 1; overflow-y: auto; background: #f9f9f9; width: 100%; box-sizing: border-box; word-break: break-word; }
+.mensaje-container { display: flex; margin: 5px 0; align-items: flex-start; }
+.mensaje { padding: 8px 12px; border-radius: 15px; max-width: 70%; word-break: break-word; }
+.usuario { background: #007bff; color: white; margin-left: auto; text-align: right; }
+.ia { background: #e0e0e0; color: black; margin-right: auto; text-align: left; }
+
+input, select, button, label { margin: 5px 0; padding: 5px; }
+#controls { margin: 10px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+#input-container { display: flex; padding: 10px; background: #eee; position: sticky; bottom: 0; z-index: 5; }
+#pregunta { flex: 1; padding: 8px; font-size: 14px; }
+#send-btn, #pdf-btn, #new-btn { padding: 8px 12px; font-size: 14px; margin-left: 5px; }
+</style>
+</head>
+<body>
+
+<h2 style="margin:10px;">Chat IA Daniel Olivares (API->Groq) en Github->Render - Conversación Fluida - Respuestas en PDF</h2>
+
+<div id="top-container">
+  <div id="diagrama-container">
+    <svg id="diagrama" width="100%" height="120" viewBox="0 0 1300 120" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L0,10 L10,5 z" fill="black" />
+        </marker>
+      </defs>
+      <rect class="block" id="usuario" x="20" y="10" width="120" height="60" fill="#4CAF50" rx="8" ry="8"/>
+      <text x="80" y="45" font-size="12" font-weight="bold" fill="white" text-anchor="middle">Usuario</text>
+      <rect class="block" id="api" x="160" y="10" width="140" height="60" fill="#2196F3" rx="8" ry="8"/>
+      <text x="230" y="45" font-size="12" font-weight="bold" fill="white" text-anchor="middle">API / Backend</text>
+      <rect class="block" id="llm" x="320" y="10" width="140" height="60" fill="#FF9800" rx="8" ry="8"/>
+      <text x="390" y="45" font-size="12" font-weight="bold" fill="white" text-anchor="middle">LLM</text>
+      <rect class="block" id="post" x="480" y="10" width="140" height="60" fill="#9C27B0" rx="8" ry="8"/>
+      <text x="550" y="45" font-size="12" font-weight="bold" fill="white" text-anchor="middle">Postprocesamiento</text>
+      <rect class="block" id="salida" x="640" y="70" width="140" height="40" fill="#607D8B" rx="8" ry="8"/>
+      <text x="710" y="95" font-size="12" font-weight="bold" fill="white" text-anchor="middle">Salida Final</text>
+      <rect class="block" id="tokenizacion_block" x="800" y="10" width="140" height="60" fill="#FF5722" rx="8" ry="8"/>
+      <text x="870" y="45" font-size="12" font-weight="bold" fill="white" text-anchor="middle">Tokenización</text>
+    </svg>
+    <div id="diagrama-detalle">Haz clic en un bloque del diagrama para ver detalles...</div>
+  </div>
+
+  <div id="script-container">
+    <h4>Script / Request JSON</h4>
+    <pre id="script-content">{}</pre>
+  </div>
+</div>
+
+<div id="chat-container">
+  <div id="controls">
+    <label for="modelo">Modelo:</label>
+    <select id="modelo">
+      <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile</option>
+      <option value="llama-3.1-8b-instant">llama-3.1-8b-instant</option>
+    </select>
+
+    <label for="idioma">Idioma:</label>
+    <select id="idioma">
+      <option value="es">Español</option>
+      <option value="en">Inglés</option>
+    </select>
+
+    <label for="rol">Rol:</label>
+    <select id="rol">
+      <option value="system">system</option>
+      <option value="user" selected>user</option>
+      <option value="assistant">assistant</option>
+    </select>
+
+    <label for="tokenizacion">Tokenización:</label>
+    <select id="tokenizacion">
+      <option value="BPE">BPE</option>
+      <option value="WordPiece">WordPiece</option>
+      <option value="SentencePiece">SentencePiece</option>
+      <option value="Char">Char</option>
+    </select>
+  </div>
+
+  <div id="chat"></div>
+
+  <div id="input-container">
+    <input type="text" id="pregunta" placeholder="Escribe tu mensaje">
+    <button id="send-btn">Enviar</button>
+    <button id="pdf-btn">Descargar PDF</button>
+    <button id="new-btn">Nueva Consulta</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+const chatDiv = document.getElementById("chat");
+const preguntaInput = document.getElementById("pregunta");
+const modeloSelect = document.getElementById("modelo");
+const idiomaSelect = document.getElementById("idioma");
+const rolSelect = document.getElementById("rol");
+const tokenSelect = document.getElementById("tokenizacion");
+const scriptContent = document.getElementById("script-content");
+const detalleDiv = document.getElementById("diagrama-detalle");
+
+let chatInfo = { usuario:[], api:[], llm:[], post:[], salida:[], tokenizacion_block:[] };
+let historialMensajes = [];
+let mensajeCount = 0;
+
+document.querySelectorAll(".block").forEach(block => {
+  block.addEventListener("click", () => {
+    const historial = chatInfo[block.id];
+    detalleDiv.textContent = historial.length ? historial.join("\n\n") : "Sin detalle disponible.";
+    document.querySelectorAll(".block").forEach(b => b.setAttribute("stroke","none"));
+    block.setAttribute("stroke","#000");
+    block.setAttribute("stroke-width","2");
+  });
+});
+
+function actualizarDiagrama(pregunta, modelo, rol, tokenizador, tokens, respuesta){
+  const cantidadTokens = tokens.length;
+  const tokensStr = tokens.join(" ");
+  const idMsg = `(${mensajeCount})`;
+
+  chatInfo.usuario.push(`${idMsg} Usuario: ${pregunta}`);
+  chatInfo.api.push(`${idMsg} API / Backend: Modelo ${modelo}, Tokenización ${tokenizador}`);
+  chatInfo.llm.push(`${idMsg} LLM: Tokens generados (${cantidadTokens})`);
+  chatInfo.post.push(`${idMsg} Postprocesamiento`);
+  chatInfo.salida.push(`${idMsg} IA: ${respuesta}`);
+  chatInfo.tokenizacion_block.push(`${idMsg} Tokenización (${tokenizador}): ${tokensStr}`);
+
+  scriptContent.textContent = JSON.stringify({
+    modelo, rol, idioma: idiomaSelect.value, tokenizacion: tokenizador,
+    prompt: pregunta, respuesta, cantidad_tokens: cantidadTokens, tokens_utilizados: tokens,
+    historial: historialMensajes
+  }, null, 2);
+}
+
+async function consultarIA(){
+  const pregunta = preguntaInput.value.trim();
+  if(!pregunta) return;
+  mensajeCount++;
+
+  const idiomaTexto = idiomaSelect.value === "es" ? "Responde en español: " : "Respond in English: ";
+  const contenido = `${idiomaTexto}${pregunta}`;
+
+  historialMensajes.push({ role: rolSelect.value, content: contenido });
+
+  const contUsuario = document.createElement("div");
+  contUsuario.className = "mensaje-container";
+  const msgUsuario = document.createElement("div");
+  msgUsuario.className = "mensaje usuario";
+  msgUsuario.innerText = `(${mensajeCount}) [${rolSelect.value}] ${pregunta}`;
+  contUsuario.appendChild(msgUsuario);
+  chatDiv.appendChild(contUsuario);
+  chatDiv.scrollTop = chatDiv.scrollHeight;
+  preguntaInput.value = "";
+
+  const requestBody = { model: modeloSelect.value, messages: historialMensajes };
+
+  try {
+    const res = await fetch("https://chat-groq-fsnm.onrender.com/chat", {
+      method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(requestBody)
+    });
+    const data = await res.json();
+    const respuesta = data.choices?.[0]?.message?.content || data.choices?.[0]?.text || "No se recibió respuesta.";
+    const tokens = data.choices?.[0]?.message?.tokens || respuesta.split(/\s+/);
+
+    historialMensajes.push({ role: "assistant", content: respuesta });
+
+    const contIA = document.createElement("div");
+    contIA.className = "mensaje-container";
+    const msgIA = document.createElement("div");
+    msgIA.className = "mensaje ia";
+    msgIA.innerText = `(${mensajeCount}) [IA] ${respuesta}`;
+    contIA.appendChild(msgIA);
+    chatDiv.appendChild(contIA);
+    chatDiv.scrollTop = chatDiv.scrollHeight;
+
+    actualizarDiagrama(pregunta, modeloSelect.value, rolSelect.value, tokenSelect.value, tokens, respuesta);
+
+  } catch(e){
+    const contError = document.createElement("div");
+    contError.className = "mensaje-container";
+    const msgError = document.createElement("div");
+    msgError.className = "mensaje ia";
+    msgError.innerText = "Error en la conexión o en la API.";
+    contError.appendChild(msgError);
+    chatDiv.appendChild(contError);
+  }
+}
+
+document.getElementById("new-btn").addEventListener("click", ()=>{
+  chatDiv.innerHTML = "";
+  scriptContent.textContent = "{}";
+  detalleDiv.textContent = "Haz clic en un bloque del diagrama para ver detalles...";
+  chatInfo = { usuario:[], api:[], llm:[], post:[], salida:[], tokenizacion_block:[] };
+  historialMensajes = [];
+  mensajeCount = 0;
+  document.querySelectorAll(".block").forEach(b => b.setAttribute("stroke","none"));
+});
+
+document.getElementById("send-btn").addEventListener("click", consultarIA);
+preguntaInput.addEventListener("keypress", e => { if(e.key==="Enter") consultarIA(); });
+
+document.getElementById("pdf-btn").addEventListener("click", ()=>{
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF('p','pt','a4'); const margin=30; let y=margin;
+  const pageWidth = doc.internal.pageSize.getWidth(); const pageHeight = doc.internal.pageSize.getHeight();
+  const maxLineWidth = pageWidth-2*margin;
+  const mensajes = Array.from(chatDiv.querySelectorAll(".mensaje")).map(m=>m.innerText);
+  mensajes.forEach(m=>{
+    const lines = doc.splitTextToSize(m,maxLineWidth); lines.forEach(line=>{if(y>pageHeight-margin){doc.addPage();y=margin;} doc.text(margin,y,line); y+=14;}); y+=10;
+  });
+  const scriptLines = doc.splitTextToSize(scriptContent.textContent,maxLineWidth);
+  if(y>pageHeight-margin){doc.addPage();y=margin;} doc.text(margin,y,"Script JSON:"); y+=14;
+  scriptLines.forEach(line=>{if(y>pageHeight-margin){doc.addPage();y=margin;} doc.text(margin,y,line); y+=14;});
+  doc.save("Chat_IA_Daniel.pdf");
+});
+</script>
+
+<!-- Firebase Auth Integration -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB13mD-1RgIKuuBem7IbogG1j4KDx_4RLM",
+    authDomain: "chat-d14e0.firebaseapp.com",
+    projectId: "chat-d14e0",
+    storageBucket: "chat-d14e0.firebasestorage.app",
+    messagingSenderId: "349661448933",
+    appId: "1:349661448933:web:47cad0741a508f95d8a20c",
+    measurementId: "G-2LS4SR4MC8"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // Crear contenedor de usuario y botón de logout
+  const userInfoDiv = document.createElement('p');
+  userInfoDiv.id = "user-info";
+  document.body.insertBefore(userInfoDiv, document.getElementById('chat-container'));
+
+  const logoutBtn = document.createElement('button');
+  logoutBtn.id = "logout";
+  logoutBtn.textContent = "Cerrar sesión";
+  document.body.insertBefore(logoutBtn, document.getElementById('chat-container'));
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      userInfoDiv.textContent = `Usuario: ${user.displayName || "Desconocido"} (${user.email})`;
+    } else {
+      window.location.href = "index.html";
+    }
+  });
+
+  logoutBtn.addEventListener('click', async () => {
+    await signOut(auth);
+    window.location.href = "index.html";
+  });
+</script>
+
+</body>
+</html>
