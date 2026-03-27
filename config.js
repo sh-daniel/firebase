@@ -1,10 +1,10 @@
 // config.js
 export const firebaseConfig = {
-  apiKey: "%FIREBASE_API_KEY%",
-  authDomain: "%FIREBASE_AUTH_DOMAIN%",
-  projectId: "%FIREBASE_PROJECT_ID%",
-  storageBucket: "%FIREBASE_STORAGE_BUCKET%",
-  messagingSenderId: "%FIREBASE_MESSAGING_SENDER_ID%",
-  appId: "%FIREBASE_APP_ID%",
-  measurementId: "%FIREBASE_MEASUREMENT_ID%"
+  apiKey: "AIzaSyB13mD-1RgIKuuBem7IbogG1j4KDx_4RLM",
+  authDomain: "chat-d14e0.firebaseapp.com",
+  projectId: "chat-d14e0",
+  storageBucket: "chat-d14e0.firebasestorage.app",
+  messagingSenderId: "349661448933",
+  appId: "1:349661448933:web:47cad0741a508f95d8a20c",
+  measurementId: "G-2LS4SR4MC8"
 };
