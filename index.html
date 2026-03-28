@@ -3,13 +3,110 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login Firebase</title>
+  <title>Login a Chat IA</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      background: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+      color: #333;
+    }
+
+    .login-text {
+      margin-bottom: 15px;
+      font-size: 16px;
+      color: #666;
+    }
+
+    button {
+      font-size: 16px;
+      padding: 12px 25px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    /* Botón Acceso a Chat */
+    .chat-btn {
+      background-color: #4285F4;
+      color: white;
+      width: 100%;
+    }
+    .chat-btn:hover {
+      background-color: #357ae8;
+      transform: scale(1.05);
+    }
+
+    /* Botón Volver a Perfil */
+    .profile-btn {
+      background-color: #555;
+      color: white;
+      width: 100%;
+    }
+    .profile-btn:hover {
+      background-color: #333;
+      transform: scale(1.05);
+    }
+
+    /* Miniaturas */
+    .thumbnail {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .thumbnail img {
+      width: 80px;
+      height: 60px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 1px solid #ccc;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+    .thumbnail img:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+  </style>
 </head>
 <body>
-  <h1>Login con Firebase</h1>
+  <div class="container">
+    <h1>Login a Chat IA</h1>
 
-  <!-- Botón Google -->
-  <button onclick="loginConGoogle()">Iniciar sesión con Google</button>
+    <div class="login-text">Iniciar sesión con Google</div>
+    <!-- Botón Acceso a Chat -->
+    <button class="chat-btn" onclick="loginConGoogle()">Acceso a Chat</button>
+
+    <!-- Botón Volver a Perfil -->
+    <button class="profile-btn" onclick="window.location.href='https://cv-daniel.onrender.com/'">Volver a Perfil Daniel</button>
+
+    <!-- Miniaturas de referencia -->
+    <div class="thumbnail">
+      <img src="https://cv-daniel.onrender.com/miniatura.png" alt="Perfil Daniel" onclick="window.open('https://cv-daniel.onrender.com/', '_blank')">
+      <img src="chat_thumbnail.png" alt="Chat IA" onclick="window.open('chat.html', '_blank')">
+    </div>
+  </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
@@ -20,13 +117,11 @@
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
 
-    // Función global para el botón
     window.loginConGoogle = async () => {
       try {
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
         console.log("Usuario Google:", user);
-        // Redirigir a la página de prueba
         window.location.href = "chat.html";
       } catch (error) {
         console.error("Error con Google Auth:", error);
