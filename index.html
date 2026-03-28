@@ -4,89 +4,83 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login a Chat IA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      background: #f0f2f5;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
+      color: #333;
     }
 
     .container {
       background: white;
-      padding: 40px;
-      border-radius: 12px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      padding: 50px 30px;
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
       text-align: center;
-      max-width: 400px;
+      max-width: 420px;
       width: 90%;
+      animation: fadeIn 1s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     h1 {
-      margin-bottom: 30px;
+      margin-bottom: 20px;
+      font-weight: 700;
       color: #333;
     }
 
     .login-text {
-      margin-bottom: 15px;
+      margin-bottom: 20px;
       font-size: 16px;
       color: #666;
     }
 
     button {
       font-size: 16px;
-      padding: 12px 25px;
+      padding: 12px 20px;
       margin: 10px 0;
       border: none;
       border-radius: 8px;
       cursor: pointer;
       transition: 0.3s ease;
+      width: 100%;
+      font-weight: 500;
     }
 
-    /* Botón Acceso a Chat */
     .chat-btn {
       background-color: #4285F4;
       color: white;
-      width: 100%;
     }
     .chat-btn:hover {
       background-color: #357ae8;
-      transform: scale(1.05);
+      transform: scale(1.03);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
     }
 
-    /* Botón Volver a Perfil */
     .profile-btn {
       background-color: #555;
       color: white;
-      width: 100%;
     }
     .profile-btn:hover {
       background-color: #333;
-      transform: scale(1.05);
+      transform: scale(1.03);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
     }
 
-    /* Miniaturas */
-    .thumbnail {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      margin-top: 20px;
-    }
-    .thumbnail img {
-      width: 80px;
-      height: 60px;
-      border-radius: 8px;
-      object-fit: cover;
-      border: 1px solid #ccc;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      cursor: pointer;
-    }
-    .thumbnail img:hover {
-      transform: scale(1.1);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    .footer {
+      margin-top: 25px;
+      font-size: 12px;
+      color: #aaa;
     }
   </style>
 </head>
@@ -95,17 +89,18 @@
     <h1>Login a Chat IA</h1>
 
     <div class="login-text">Iniciar sesión con Google</div>
+
     <!-- Botón Acceso a Chat -->
-    <button class="chat-btn" onclick="loginConGoogle()">Acceso a Chat</button>
+    <button class="chat-btn" onclick="loginConGoogle()">
+      Acceso a Chat
+    </button>
 
     <!-- Botón Volver a Perfil -->
-    <button class="profile-btn" onclick="window.location.href='https://cv-daniel.onrender.com/'">Volver a Perfil Daniel</button>
+    <button class="profile-btn" onclick="window.location.href='https://cv-daniel.onrender.com/'">
+      Volver a Perfil Daniel
+    </button>
 
-    <!-- Miniaturas de referencia -->
-    <div class="thumbnail">
-      <img src="https://cv-daniel.onrender.com/miniatura.png" alt="Perfil Daniel" onclick="window.open('https://cv-daniel.onrender.com/', '_blank')">
-      <img src="chat_thumbnail.png" alt="Chat IA" onclick="window.open('chat.html', '_blank')">
-    </div>
+    <div class="footer">© 2026 Daniel Portfolio</div>
   </div>
 
   <script type="module">
